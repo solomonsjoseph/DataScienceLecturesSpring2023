@@ -1,7 +1,11 @@
 ---
 title: "Introduction to Data Science"
 subtitle: "Data Science Lecture Series"
-author: "W. Evan Johnson"
+author: | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Rutgers University -- New Jersey Medical School
 date: "2023-03-13"
 header-includes:
    - \usepackage{amsmath}
