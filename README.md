@@ -18,6 +18,5 @@ These are the materials for our Spring 2023 Data Science Lectures. Hopefully the
     + Contact Brie Odom-Mabey to get access: <aodom@bu.edu>
     + Please note that this channel is the Johnson Lab's main method of comminication. Please be respectful, professional, and confidential!
 * GitHub:
-    + All materials for this course will be posed on the GitHub page:
-    + https://github.com/wevanjohnson/DataScienceLecturesSpring2023
+    + All materials for this course will be posted on the course GitHub page: https://github.com/wevanjohnson/DataScienceLecturesSpring2023
     + You obviously have this since you are here!
