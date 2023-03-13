@@ -6,7 +6,7 @@ These are the materials for our Spring 2023 Data Science Lectures. Hopefully the
 
 * Lots of diverse material will be covered in this course
     + Data Science is __NOT__ a spectator sport! You need to practice the skills you learn over and over again!
-* Many of my materials are adapted from the following resources (thanks to the authros for these): 
+* Many of my materials are adapted from the following resources (thanks to the authors for these): 
     + https://rafalab.github.io/dsbook/
     + https://mdsr-book.github.io/mdsr2e/
     + https://r4ds.had.co.nz
