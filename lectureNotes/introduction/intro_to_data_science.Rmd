@@ -51,7 +51,7 @@ You will need to install the following: \vskip .1in
 
 * R and R Studio
 * Know how to access a terminal (Rstudio or Terminal)
-* git (type "git --version" in the terminal)
+* git (type `git --version` in the terminal)
 
 \vskip .1in
 	
