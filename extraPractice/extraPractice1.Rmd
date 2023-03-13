@@ -1,6 +1,9 @@
 ---
 title: "Extra Practice 1"
-author: "W. Evan Johnson"
+author:  | 
+  | W. Evan Johnson, Ph.D.
+  | Director, Center for Data Science
+  | Rutgers New Jersey Medical School
 date: "2023-03-13"
 output: pdf_document
 ---
@@ -27,7 +30,7 @@ Most Unix implementations include a large number of powerful tools and utilities
 		\item \texttt{ls -l | less}
 		\item \texttt{ls -l > directory\_contents.txt}
 		\item \texttt{ls -l >> directory\_contents.txt}
-		\item \texttt{cat directory\_contents.txtt | head -3 | tail -2}
+		\item \texttt{cat directory\_contents.txt | head -3 | tail -2}
 		\item \texttt{ls | grep -c html}
 		\item \texttt{ls | wc -l}
 		\item \texttt{cat file1.txt file2.txt > file3.txt}
