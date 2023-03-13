@@ -11,10 +11,11 @@ These are the materials for our Spring 2023 Data Science Lectures. Hopefully the
     + https://rutgers.zoom.us/j/97374683455?pwd=cHJWaE92eTlHVGRUYTNaUkVqNkJhZz09
     + Lecture recordings will be posted on the Slack channel in case you miss one!
 * Communication on Johnson Lab Slack:
-    + All communication for the course will be facilited through the Johnson Lab Slack: 
-    + Look on the #data-science-learning channel
+    + All communication for the course will be facilitated through the Johnson Lab Slack
+    + Look on the: #data-science-learning channel
     + Contact Brie Odom-Mabey to get access: <aodom@bu.edu>
-    + Please note that this channel is the Johnson Labs main method of comminication. Please be respectful, professional, and confidential!
+    + Please note that this channel is the Johnson Lab's main method of comminication. Please be respectful, professional, and confidential!
 * GitHub:
+    + All materials for this course will be posed on the GitHub page:
     + https://github.com/wevanjohnson/DataScienceLecturesSpring2023
     + You obviously have this since you are here!
