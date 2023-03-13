@@ -10,7 +10,7 @@ These are the materials for our Spring 2023 Data Science Lectures. Hopefully the
     + https://rafalab.github.io/dsbook/
     + https://mdsr-book.github.io/mdsr2e/
     + https://r4ds.had.co.nz
-* Lecture times and (virual) location:
+* Lecture times and (virtual) location:
     + Class will occur Mondays at 8-9am Mountain Daylight Time (7am PDT, 10am EDT, 2pm GMT, 7:30pm IST) at the following link: https://rutgers.zoom.us/j/97374683455?pwd=cHJWaE92eTlHVGRUYTNaUkVqNkJhZz09
     + Lecture recordings will be posted on the Slack channel in case you miss one!
 * Communication on Johnson Lab Slack:
