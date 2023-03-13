@@ -1,0 +1,135 @@
+---
+title: "Introduction to Data Science"
+subtitle: "Data Science Lecture Series"
+author: "W. Evan Johnson"
+date: "2023-03-13"
+header-includes:
+   - \usepackage{amsmath}
+output: 
+  beamer_presentation:
+    theme: "CambridgeUS"
+editor_options: 
+  chunk_output_type: console
+tables: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+img_path <- "figs/"
+```
+
+# Course Details
+
+## 
+\begin{center}
+{\Huge\bf Introductions!}
+\end{center}
+
+
+## Things you should know about this course
+
+* Lots of diverse material
+    + Not a spectator sport!
+* Zoom: 
+    + https://rutgers.zoom.us/j/97374683455?pwd=cHJWaE92eTlHVGRUYTNaUkVqNkJhZz09
+* Johnson Lab Slack:
+    + #data-science-learning channel
+    + Contact Brie Odom-Mabey to get access: <aodom@bu.edu>
+* GitHub:
+    + https://github.com/wevanjohnson/DataScienceLecturesSpring2023
+ 
+# Installation Details
+
+## Important installations
+You will need to install the following: \vskip .1in
+
+**Mac Users**
+
+* R and R Studio
+* Know how to access a terminal (Rstudio or Terminal)
+* git (type "git --version" in the terminal)
+
+\vskip .1in
+	
+**Windows Users:**
+
+* R and R Studio
+* A terminal app (Git Bash, MobaXterm, Putty)
+* Git for Windows
+
+## R and Rstudio
+
+See instructions at: https://rafalab.github.io/dsbook/installing-r-rstudio.html
+
+## Accessing the terminal and installing Git
+
+See instructions at: https://rafalab.github.io/dsbook/accessing-the-terminal-and-installing-git.html
+
+## For Windows: link Git Bash and RStudio
+
+We can access the terminal either through RStudio or by opening Git Bash directly. For RStudio, set Git Bash as the default Unix shell: go to preferences (under the File pull down menu), then select Terminal, then select Git Bash:
+\begin{center}
+\includegraphics[height=2.5 in]{figs/VirtualBox_Windows-7-Enterprise_23_03_2018_09_38_00.png}
+\end{center}
+
+# Introduction to Data Science 
+
+##
+
+\begin{center}
+\includegraphics[width=4.5in]{figs/bigdata.png}
+\end{center}
+
+Big Data has fundamentally changed how we look at science and business. Along with advances in analytic methods, they are providing unparalleled insights into our physical world and society
+
+## Structured vs. Unstructured data
+\includegraphics[width=4.75in]{figs/data_collage.png}
+
+## Data Science Revolution
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\includegraphics[width=2.5in]{figs/ds_venn.png}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+{
+	\begin{itemize}
+	\item Few have all the skills	
+	\item Flexibility in area (business, strategy, health care) and conditions
+	\item Data science makes companies and data better! 
+	\end{itemize}
+}
+	\end{column}
+\end{columns}
+
+##
+\begin{center}
+	\includegraphics[width=3.5in]{figs/modds.png}	
+\end{center}
+
+## Data Science Process
+\includegraphics[width=4.75in]{figs/dsprocess.png}	
+
+## Scientific Cycle for Data Science
+\begin{center}
+Johnson Lab Approach to Science:
+\vskip .2in
+	\includegraphics[width=4.75in]{figs/ds_model.png}	
+\end{center}
+
+# Keeping the "Science" in Data Science
+
+## Domain Knowledge
+
+**Domain knowledge** is knowledge of a specific, specialized discipline or field, in contrast to general (or domain-independent) knowledge. For example, in describing a software engineer may have general knowledge of computer programming as well as domain knowledge about developing programs for a particular industry. People with domain knowledge are often regarded as specialists or experts in their field. (Wikipedia!)
+
+## Analytics Hierarchy
+\begin{center}		
+	\includegraphics[height=3in]{figs/dataflow1}
+\end{center}
+
+## Analytics Hierarchy
+\begin{center}		
+	\includegraphics[height=3in]{figs/dataflow2}
+\end{center}
+
