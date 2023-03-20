@@ -284,7 +284,11 @@ Most Unix implementations include a large number of powerful tools and utilities
 In your Extra Practice, you will cover more advanced Unix functions such as `chmod`, `less`, `vim`, `grep`, `ln`, `tar`, `ssh`, and `pipes`. (and `git`!!!) Stay tuned!
 
 
-
+## Session info
+\tiny
+```{r session info}
+sessionInfo()
+```
 
 
 

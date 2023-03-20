@@ -137,3 +137,9 @@ Johnson Lab Approach to Science:
 	\includegraphics[height=3in]{figs/dataflow2}
 \end{center}
 
+## Session info
+\tiny
+```{r session info}
+sessionInfo()
+```
+

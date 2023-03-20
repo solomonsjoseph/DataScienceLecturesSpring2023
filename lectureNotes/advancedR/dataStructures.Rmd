@@ -1,0 +1,124 @@
+---
+title: "Efficient Management of Data in R (Data Structures!)"
+subtitle: "Data Science Lecture Series: Advanced R"
+author: | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Rutgers University -- New Jersey Medical School
+date: "2023-03-27"
+header-includes:
+   - \usepackage{amsmath}
+output: 
+  beamer_presentation:
+    theme: "CambridgeUS"
+editor_options: 
+  chunk_output_type: console
+tables: true
+---
+
+# Introduction to Data Structures
+
+## Importance of data structures
+
+A data structure is a particular way of organizing data in a computer so that it can be used effectively. The idea is to reduce the space and time complexities of different tasks. \vskip .2in
+
+Data structures in R programming are tools for holding multiple values, variables, and sometimes functions.\vskip .2in
+
+Please think very carefully about the way you manage and store your data! This can make your life much easier and make your code and data cleaner and more portable!
+
+
+## Types of data structures in R
+R's base data structures are often organized by their dimensionality (1D, 2D, nD) and whether they’re homogeneous  or heterogeneous (elements of identical or various type). Six of the most common data types are: 
+
+1. Vectors
+2. Lists
+3. Matrices
+4. Arrays
+5. Factors
+6. Data frames (or tibbles)
+
+# Data Frames
+
+## Data Frames
+The most common data structure for storing a dataset in R is in a **data frame**. Conceptually, we can think of a data frame as a two dimensional table with rows representing observations and the different variables reported for each observation defining the columns. Data frames are particularly useful for datasets because we can combine different data types into one object. 
+
+## Data Frames
+We can convert matrices into data frames using the function `as.data.frame`:
+
+```{r}
+mat <- matrix(1:12, 4, 3)
+mat <- as.data.frame(mat)
+```
+\vskip .1in
+
+Or just generate it directly using the `data.frame` function:
+
+```{r}
+dat <- data.frame(x=1:4, y=5:8, z=9:12)
+```
+\vskip .1in
+
+A `data.frame` can be indexed as matrices, `dat[1:2, 2:3]`, and columns can be extracted using the `$` operator.  
+
+# Tibbles
+
+## Tibbles
+Here is a printed version of the data frame: 
+```{r}
+dat
+```
+
+## Tibbles}
+A __tibble__ is a modern version of a data.frame. 
+
+```{r message=FALSE}
+library(tidyverse)
+dat1 <- tibble(x=1:4, y=5:8, z=9:12)
+```
+\vskip .1in
+
+Or convert a data.frame to a tibble
+```{r}
+dat <- data.frame(x=1:4, y=5:8, z=9:12)
+dat1 <- as_tibble(dat)
+```
+\vskip .1in
+
+## Tibbles
+Here is a printed version of the tibble: 
+
+```{r}
+dat1
+```
+
+
+## Tibbles
+Important characteristics that make tibbles unique: 
+
+1. Tibbles are primary data structure for the `tidyverse`
+2. Tibbles display better and printing is more readable
+3. Tibbles can be grouped
+4. Subsets of tibbles are tibbles
+5. Tibbles can have complex entries--numbers, strings, logicals, lists, functions.
+6. Tibbles can (almost) enable object-orientated programming in R  
+
+# Advanced Data Structures in R
+
+## Advanced Data Structures in R
+
+In your homework, you will explore more advanced R data structures, namely the __S3__ and __S4__ class objects. These can facilitate object orientated programming. \vskip .1in
+
+## Advanced Data Structures in R 
+One example of an S4 class data structure is the __SummarizedExperiment__ object. 
+
+\begin{center}
+	\includegraphics[width=2.75in]{figs/SummarizedExperiment.png}	
+\end{center}
+
+## Session info
+\tiny
+```{r session info}
+sessionInfo()
+```
+
