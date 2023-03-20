@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.align="center")
 
 ## Unix Introduction
 
-**Unix** is a family of multitasking, multiuser computer operating systems that derive from the original AT\&T Unix. Originally developed in 1969 at Bell Labs
+**Unix** is a family of multitasking, multiuser computer operating systems that derive from the original AT\&T Unix. Originally developed in 1969 at Bell Labs. (Thanks Dennis Ritchie and Ken Thompson!)
 
 \begin{center}
 \includegraphics[height=2in]{figs/unix/thompson_richie.png}
