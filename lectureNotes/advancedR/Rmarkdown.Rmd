@@ -98,7 +98,7 @@ R markdown is a format for __literate programming__ documents. \vskip .2in
 
 It is based on __markdown__, a markup language that is widely used to generate html pages. \vskip .2in 
 
-You can learn more about markdown here: https://www.markdowntutorial.com/
+You can learn more about markdown here: [click here](https://www.markdowntutorial.com/)
 
 ## R markdown
 

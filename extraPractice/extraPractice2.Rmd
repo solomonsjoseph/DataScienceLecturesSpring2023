@@ -1,0 +1,13 @@
+---
+title: "Extra Practice 2"
+author:  | 
+  | W. Evan Johnson, Ph.D.
+  | Director, Center for Data Science
+  | Rutgers New Jersey Medical School
+date: "2023-04-24"
+output: pdf_document
+---
+\subsection*{R Markdown}
+R Markdown is a powerful tool for **literate prgramming.** To gain more practice, recreate the .Rmd file for the example file: "extraPractice2_html.html."
+
+
