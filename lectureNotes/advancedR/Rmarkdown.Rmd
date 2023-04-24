@@ -208,7 +208,7 @@ We use the __knitR__ package to compile R markdown documents. The specific funct
 ## Other options
 We will explore other R Markdown options:  headers, tabsets, and latex equations in class and in your Extra Practice. 
 \vskip .2 in
-\underline{Note:} From now on, all R-based homework will need to be turned in using an R Markdown document (uploaded to GitHub). Your document should include headers, descriptive text, R code, and  plots/figures! 
+\underline{Note:} From now on, all R-based Extra Practive will be preferably finished using an R Markdown document (uploaded to GitHub). Your document should include headers, descriptive text, R code, and  plots/figures! 
 
  
 ## More on R markdown
