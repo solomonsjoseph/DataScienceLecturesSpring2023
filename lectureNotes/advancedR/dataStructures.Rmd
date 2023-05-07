@@ -6,7 +6,7 @@ author: |
   | Professor, Division of Infectious Disease
   | Director, Center for Data Science
   | Rutgers University -- New Jersey Medical School
-date: "2023-03-27"
+date: "2023-05-07"
 header-includes:
    - \usepackage{amsmath}
 output: 
@@ -16,6 +16,87 @@ editor_options:
   chunk_output_type: console
 tables: true
 ---
+
+# Importing data
+
+## Importing data
+The first problem a data scientist will usually face is how to import data into R! \vskip .2in
+
+Often they have to import data from either a file, a database, or other sources. One of the most common ways of storing and sharing data for analysis is through electronic spreadsheets. \vskip .2in
+
+A spreadsheet stores data in rows and columns. It is basically a file version of a \texttt{data frame} (or a \texttt{tibble!}).
+
+## Importing data
+A common function for importing data is the \texttt{read.table} function: 
+
+```{r, eval=F}
+mydata <- read.table("mydata.txt")
+```
+
+This is looking for a structured dataset, with the same number of entries in each row, and data that is delimited with a single space between values.  
+
+## Importing data
+The \texttt{read.table} function can also read tab-delimited data: 
+
+
+```{r, eval=F}
+mydata <- read.table("mydata.txt", sep="\t")
+```
+
+\vskip .2in
+Or comma separated (.csv) formats: 
+```{r, eval=F}
+mydata <- read.table("mydata.txt", sep=",")
+```
+
+(also explore the \texttt{read.csv} function)
+
+## Importing data
+We can also add options to set the first column as a header and select a row for the row labels:
+
+```{r, eval=F}
+mydata <- read.table("mydata.txt",
+                     header=TRUE,
+                     row.names="id")
+```
+
+## Importing data
+Excel files can also be directly imported using \texttt{read.xlsx}: 
+
+```{r, eval=F}
+library(xlsx)
+mydata <- read.xlsx("myexcel.xlsx")
+```
+\vskip .2in
+And one can also select a specific sheet in the Excel file: 
+
+```{r, eval=F}
+mydata <- read.xlsx("myexcel.xlsx", 
+                    sheetName = "mysheet")
+```
+
+## Other functions for importing data
+Other useful importing tools are \texttt{scan}, \texttt{readLines}, \texttt{readr}, and \texttt{readxl}. The latter two we will discuss later.
+
+# Exporting Data
+
+## Exporting data
+We have many options for exporting data from R. For data frames, one of the easiest ways to output data is with the \texttt{write.table} function: 
+
+```{r, eval=F}
+write.table(dat, file = "data_out.txt", 
+            quote = FALSE, sep = ",",
+            row.names = TRUE, 
+            col.names = TRUE)
+```
+
+## Exporting data
+Another important and useful way of inputting/outputting data is in an Rds object: 
+
+```{r, eval=F}
+saveRDS(dat, file = "dat.Rds")
+dat.copy <- readRDS(file = "dat.Rds")
+```
 
 # Introduction to Data Structures
 
