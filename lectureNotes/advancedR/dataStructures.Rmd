@@ -150,7 +150,7 @@ Here is a printed version of the data frame:
 dat
 ```
 
-## Tibbles}
+## Tibbles
 A __tibble__ is a modern version of a data.frame. 
 
 ```{r message=FALSE}
@@ -188,7 +188,7 @@ Important characteristics that make tibbles unique:
 
 ## Advanced Data Structures in R
 
-In your homework, you will explore more advanced R data structures, namely the __S3__ and __S4__ class objects. These can facilitate object orientated programming. \vskip .1in
+In your Extra Practice, you will explore more advanced R data structures, namely the __S3__ and __S4__ class objects. These can facilitate object orientated programming. \vskip .1in
 
 ## Advanced Data Structures in R 
 One example of an S4 class data structure is the __SummarizedExperiment__ object. 
