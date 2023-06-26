@@ -14,7 +14,10 @@
 */*.aux
 */*.smn
 */*.toc
-
+*/*/*.nav
+*/*/*.aux
+*/*/*.smn
+*/*/*.toc
 
 ## Hide this one for homework
 extraPractice/extraPractice2_html.Rmd
