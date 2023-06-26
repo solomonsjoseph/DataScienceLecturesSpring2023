@@ -1,5 +1,6 @@
 \beamer@sectionintoc {1}{Importing data}{2}{0}{1}
-\beamer@sectionintoc {2}{Introduction to Data Structures}{9}{0}{2}
-\beamer@sectionintoc {3}{Data Frames}{12}{0}{3}
-\beamer@sectionintoc {4}{Tibbles}{15}{0}{4}
-\beamer@sectionintoc {5}{Advanced Data Structures in R}{20}{0}{5}
+\beamer@sectionintoc {2}{Exporting Data}{9}{0}{2}
+\beamer@sectionintoc {3}{Introduction to Data Structures}{12}{0}{3}
+\beamer@sectionintoc {4}{Data Frames}{15}{0}{4}
+\beamer@sectionintoc {5}{Tibbles}{18}{0}{5}
+\beamer@sectionintoc {6}{Advanced Data Structures in R}{23}{0}{6}
