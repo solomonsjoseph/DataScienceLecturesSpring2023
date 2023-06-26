@@ -12,11 +12,11 @@
 ## other files that are made by R markdown or latex:
 */*.nav
 */*.aux
-*/*.smn
+*/*.snm
 */*.toc
 */*/*.nav
 */*/*.aux
-*/*/*.smn
+*/*/*.snm
 */*/*.toc
 
 ## Hide this one for homework
