@@ -5,7 +5,7 @@ author:  |
   | Professor, Division of Infectious Disease
   | Director, Center for Data Science
   | Rutgers University -- New Jersey Medical School
-date: "6/26/2022"
+date: "6/26/2023"
 output: 
   beamer_presentation:
     theme: "CambridgeUS"
@@ -146,7 +146,9 @@ Add elements to your app as arguments to `fluidPage()`
 ```{r first app UI,eval=F,echo=T}
 library(shiny)
 
-ui <- fluidPage("Hello World!")
+ui <- fluidPage(
+  "Hello World!"
+  )
 
 server <- function(input, output) {}
 
@@ -227,7 +229,7 @@ server <- function(input, output) {}
 shinyApp(server = server, ui = ui)
 ```
 
-Note that you muse build the output in the server first!
+Note that you must build the output in the server first!
 
 ## Shiny outputs
 \center
@@ -290,7 +292,7 @@ library(shiny)
 ui <- fluidPage(
   sliderInput(inputId = "num",
     label = "Choose a number",
-    value = 25, min = 1, max = 100), 
+    value = 25, min = 0, max = 100), 
   plotOutput("hist")
   )
 

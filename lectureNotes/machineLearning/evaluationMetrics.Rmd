@@ -1,0 +1,307 @@
+---
+title: "Evauluation Metrics"
+author:  | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Rutgers University -- New Jersey Medical School
+date: "7/17/2023"
+header-includes:
+   - \usepackage{amsmath}
+output: 
+  beamer_presentation:
+    theme: "CambridgeUS"
+editor_options: 
+  chunk_output_type: console
+tables: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+img_path <- "img/"
+```
+
+## Evaluation metrics
+
+Before we start describing approaches to optimize the way we build algorithms, we first need to define what we mean when we say one approach is better than another. 
+
+We use the `caret` package, which has several useful functions for building and assessing machine learning methods.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(caret)
+```
+
+## Evaluation metrics
+For a first example, we use the height data in dslabs:
+```{r}
+library(dslabs)
+data(heights)
+```
+
+To summarize the data, consider the following boxplot:
+```{r,out.width="50%", fig.align="center"}
+boxplot(heights$height~heights$sex)
+```
+
+## Evaluation metrics
+We will start with a simple example: suppose we want to predict sex using height. We start by defining the outcome and predictors. 
+
+```{r}
+y <- heights$sex
+x <- heights$height
+```
+
+## Evaluation metrics
+In this case, we have only one predictor, height, and `y` is clearly a categorical outcome since observed values are either `Male` or `Female`.
+
+We know that we will not be able to predict $Y$ very accurately based on $X$ because male and female average heights are not that different relative to within group variability. But can we do better than guessing? To answer this question, we need a quantitative definition of better. 
+
+## Training and test sets {#training-test}
+
+Ultimately, a machine learning algorithm is evaluated on how it performs in the real world with completely new datasets. However, we usually have a dataset for which we know the outcomes, as we do with the heights: we know the sex of every student in our dataset. Therefore, to mimic the ultimate evaluation process, we typically split the data into two parts and act as if we don't know the outcome for one of these.
+
+We refer to the group for which we know the outcome, and use to develop the algorithm, as the __training__ set. We refer to the group for which we pretend we don't know the outcome as the __test__ set. 
+
+## Training and test sets
+The `caret` package includes the function `createDataPartition` that helps us generates indexes for randomly splitting the data into training and test sets: 
+
+```{r}
+set.seed(2007)
+test_index <- createDataPartition(y, times = 1, 
+                                  p = 0.5, list = FALSE)
+```
+
+The argument `times` is used to define how many random samples of indexes to return, `p` is used to define what proportion of the data is represented by the index, and `list` is used to decide if we want the indexes returned as a list or not.
+
+
+## Training and test sets
+We can use the result of the `createDataPartition` function call to define the training and test sets like this:
+
+```{r}
+test_set <- heights[test_index, ]
+train_set <- heights[-test_index, ]
+```
+
+We develop an algorithm using **only** the training set. Once we are done developing the algorithm, we will __freeze__ it and evaluate it using the test set. The simplest way to evaluate the algorithm when the outcomes are categorical is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is usually referred to as __overall accuracy__.
+
+## Overall accuracy
+
+To demonstrate the use of overall accuracy, we will build two competing algorithms and compare them.
+
+Let's start by developing the simplest possible machine algorithm: guessing the outcome.
+
+```{r}
+y_hat <- sample(c("Male", "Female"), 
+                length(test_index), replace = TRUE)
+```
+
+We are completely ignoring the predictor and simply guessing the sex. 
+
+## Overall accuracy
+In machine learning applications, it is useful to use factors to represent the categorical outcomes because R functions developed for machine learning, such as those in the `caret` package, require or recommend that categorical outcomes be coded as factors. So convert `y_hat` to factors using the `factor` function:
+
+```{r}
+y_hat <- sample(c("Male", "Female"), 
+                length(test_index), replace = TRUE) %>%
+  factor(levels = levels(test_set$sex))
+```
+
+## Overall accuracy
+The _overall accuracy_ is simply defined as the overall proportion that is predicted correctly:
+
+```{r}
+mean(y_hat == test_set$sex)
+```
+
+Not surprisingly, our accuracy is about 50%. We are guessing!
+
+## Overall accuracy
+Can we do better? Exploratory data analysis suggests we can because, on average, males are slightly taller than females:
+
+```{r}
+heights %>% group_by(sex) %>% 
+  summarize(mean(height), sd(height))
+```
+
+## Overall accuracy
+But how do we make use of this insight? Let's try another simple approach: predict `Male` if height is within two standard deviations from the average male:
+
+```{r}
+y_hat <- ifelse(x > 62, "Male", "Female") %>% 
+  factor(levels = levels(test_set$sex))
+```
+
+The accuracy goes up from 0.50 to about 0.80:
+
+```{r}
+mean(y == y_hat)
+```
+
+## Overall accuracy
+But can we do even better? In the example above, we used a cutoff of 62, but we can examine the accuracy obtained for other cutoffs and then pick the value that provides the best results. 
+
+But remember, **it is important that we optimize the cutoff using only the training set**: the test set is only for evaluation. 
+
+Although for this simplistic example it is not much of a problem, later we will learn that evaluating an algorithm on the training set can lead to __overfitting__, which often results in dangerously over-optimistic assessments. 
+
+## Overall accuracy
+Here we examine the accuracy of 10 different cutoffs and pick the one yielding the best result:
+
+```{r}
+cutoff <- seq(61, 70)
+accuracy <- map_dbl(cutoff, function(x){
+  y_hat <- ifelse(train_set$height > x, "Male", "Female") %>% 
+    factor(levels = levels(test_set$sex))
+  mean(y_hat == train_set$sex)
+})
+```
+
+We can make a plot showing the accuracy obtained on the training set for males and females:
+
+## Overall accuracy
+
+```{r accuracy-vs-cutoff, echo=FALSE, out.width="90%", fig.align="center"}
+data.frame(cutoff, accuracy) %>% 
+  ggplot(aes(cutoff, accuracy)) + 
+  geom_point() + 
+  geom_line() 
+```
+
+## Overall accuracy
+We see that the maximum value is:
+
+```{r}
+max(accuracy)
+```
+
+which is much higher than 0.5. The cutoff resulting in this accuracy is:
+
+```{r}
+best_cutoff <- cutoff[which.max(accuracy)]
+best_cutoff
+```
+
+## Overall accuracy
+We can now test this cutoff on our test set to make sure our accuracy is not overly optimistic:
+\small
+```{r}
+y_hat <- ifelse(test_set$height > best_cutoff,"Male","Female") %>% 
+  factor(levels = levels(test_set$sex))
+y_hat <- factor(y_hat)
+mean(y_hat == test_set$sex)
+```
+
+\normalsize
+We see that it is a bit lower than the accuracy observed for the training set, but it is still better than guessing. And by testing on a dataset that we did not train on, we know our result is not due to cherry-picking a good result.
+
+## The confusion matrix
+
+The prediction rule we developed in the previous section predicts `Male` if the student is taller than `r best_cutoff` inches. Given that the average female is about `r best_cutoff` inches, this prediction rule seems wrong. What happened? If a student is the height of the average female, shouldn't we predict `Female`? 
+
+## The confusion matrix
+Generally speaking, overall accuracy can be a deceptive measure. To see this, we will start by constructing what is referred to as the _confusion matrix_, which basically tabulates each combination of prediction and actual value. We can do this in R using the function `table`:
+
+```{r}
+table(predicted = y_hat, actual = test_set$sex)
+```
+
+## The confusion matrix
+If we study this table closely, it reveals a problem. If we compute the accuracy separately for each sex, we get:
+
+```{r}
+test_set %>% 
+  mutate(y_hat = y_hat) %>%
+  group_by(sex) %>% 
+  summarize(accuracy = mean(y_hat == sex))
+```
+
+## The confusion matrix
+There is an imbalance in the accuracy for males and females: too many females are predicted to be male. We are calling almost half of the females male! How can our overall accuracy be so high then?  This is because the __prevalence__ of males in this dataset is high. These heights were collected from three data sciences courses, two of which had more males enrolled:
+
+
+```{r}
+prev <- mean(y == "Male")
+prev
+```
+
+## The confusion matrix
+So when computing overall accuracy, the high percentage of mistakes made for females is outweighed by the gains in correct calls for men. **This can actually be a big problem in machine learning.** If your training data is biased in some way, you are likely to develop algorithms that are biased as well. The fact that we used a test set does not matter because it is also derived from the original biased dataset. This is one of the reasons we look at metrics other than overall accuracy when evaluating a machine learning algorithm.
+
+## The confusion matrix
+
+There are several metrics that we can use to evaluate an algorithm in a way that prevalence does not cloud our assessment, and these can all be derived from the confusion matrix. A general improvement to using overall accuracy is to study __sensitivity__ and __specificity__ separately. 
+
+
+## Sensitivity and specificity 
+In general, __sensitivity__ is defined as the ability of an algorithm to predict a positive outcome when the actual outcome is positive: $\hat{Y}=1$ when $Y=1$. Because an algorithm that calls everything positive ($\hat{Y}=1$ no matter what) has perfect sensitivity, this metric on its own is not enough to judge an algorithm. 
+
+For this reason, we also examine __specificity__, which is generally defined as the ability of an algorithm to not predict a positive $\hat{Y}=0$ when the actual outcome is not a positive $Y=0$. 
+
+
+
+## Sensitivity and specificity 
+We name the four entries of the confusion matrix:
+
+```{r, echo=FALSE}
+mat <- matrix(c("True positives (TP)", "False negatives (FN)", 
+                "False positives (FP)", "True negatives (TN)"), 2, 2)
+colnames(mat) <- c("Actually Positive", "Actually Negative")
+rownames(mat) <- c("Predicted positive", "Predicted negative")
+tmp <- as.data.frame(mat)
+if(knitr::is_html_output()){
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
+}
+```
+
+## Sensitivity and specificity 
+**Sensitivity** is typically quantified by $TP/(TP+FN)$, the proportion of actual positives (the first column = $TP+FN$) that are called positives ($TP$). This quantity is referred to as the __true positive rate__ (TPR) or __recall__. 
+
+## Sensitivity and specificity 
+**Specificity** is defined as $TN/(TN+FP)$ or the proportion of negatives (the second column = $FP+TN$) that are called negatives ($TN$). This quantity is also called the true negative rate (TNR). 
+
+## Sensitivity and specificity 
+There is another way of quantifying accuracy which is $TP/(TP+FP)$ or the proportion of outcomes called positives (the first row or $TP+FP$) that are actually positives ($TP$). This quantity is referred to as __positive predictive value (PPV)__  and also as __precision__. Note that, unlike TPR and TNR, precision depends on prevalence since higher prevalence implies you can get higher precision even when guessing. 
+
+
+## Sensitivity and specificity 
+The multiple names can be confusing, so we include a table to help us remember the terms. The table includes a column that shows the definition if we think of the proportions as probabilities.
+
+
+| Measure of | Name 1 | Name 2 | Definition | Probability representation |
+|---------|-----|----------|--------|------------------|
+sensitivity | TPR | Recall | $\frac{\mbox{TP}}{\mbox{TP} + \mbox{FN}}$ | $\mbox{Pr}(\hat{Y}=1 \mid Y=1)$ |
+specificity | TNR | 1-FPR | $\frac{\mbox{TN}}{\mbox{TN}+\mbox{FP}}$ | $\mbox{Pr}(\hat{Y}=0 \mid Y=0)$ |
+Precision |  PPV |  | $\frac{\mbox{TP}}{\mbox{TP}+\mbox{FP}}$ | $\mbox{Pr}(Y=1 \mid \hat{Y}=1)$|
+
+Here TPR is True Positive Rate, FPR is False Positive Rate, and PPV is Positive Predictive Value.
+
+## Sensitivity and specificity 
+The `caret` function `confusionMatrix` computes all these metrics for us once we define what category "positive" is. The function expects factors as input, and the first level is considered the positive outcome or $Y=1$. In our example, `Female` is the first level because it comes before `Male` alphabetically. If you type this into R you will see several metrics including accuracy, sensitivity, specificity, and PPV.
+
+```{r}
+cm <- confusionMatrix(data = y_hat, 
+                      reference = test_set$sex)
+```
+
+## Sensitivity and specificity 
+You can acceess these directly, for example, like this:
+
+```{r}
+cm$overall["Accuracy"]
+cm$byClass[c("Sensitivity","Specificity", "Prevalence")]
+```
+
+## Sensitivity and specificity 
+We can see that the high overall accuracy is possible despite relatively low sensitivity. As we hinted at above, the reason this happens is because of the low prevalence (0.23): the proportion of females is low. Because prevalence is low, failing to predict actual females as females (low sensitivity) does not lower the accuracy as much as failing to predict actual males as males (low specificity). 
+
+
+## Session Info
+\tiny
+```{r session}
+sessionInfo()
+```
