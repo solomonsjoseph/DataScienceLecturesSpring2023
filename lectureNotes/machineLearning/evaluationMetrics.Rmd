@@ -234,14 +234,18 @@ There are several metrics that we can use to evaluate an algorithm in a way that
 
 
 ## Sensitivity and specificity 
-In general, __sensitivity__ is defined as the ability of an algorithm to predict a positive outcome when the actual outcome is positive: $\hat{Y}=1$ when $Y=1$. Because an algorithm that calls everything positive ($\hat{Y}=1$ no matter what) has perfect sensitivity, this metric on its own is not enough to judge an algorithm. 
+In general, __sensitivity__ is defined as the ability of an algorithm to predict a positive outcome when the actual outcome is positive: $\hat{Y}=1$ when $Y=1$. 
 
+\vskip .2in
+Because an algorithm that calls everything positive ($\hat{Y}=1$ no matter what) has perfect sensitivity, this metric on its own is not enough to judge an algorithm. 
+
+## Sensitivity and specificity 
 For this reason, we also examine __specificity__, which is generally defined as the ability of an algorithm to not predict a positive $\hat{Y}=0$ when the actual outcome is not a positive $Y=0$. 
 
 
 
 ## Sensitivity and specificity 
-We name the four entries of the confusion matrix:
+We name the four entries of the __confusion matrix__:
 
 ```{r, echo=FALSE}
 mat <- matrix(c("True positives (TP)", "False negatives (FN)", 
