@@ -21,6 +21,46 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 img_path <- "regfigs/"
 ```
 
+## Introduction to regression
+In data science applications, it is very common to be interested in the relationship between two or more variables. For example, we we might want to use a data-driven approach that examines the relationship between baseball player statistics and success to guide the building of a baseball team with a limited budget.  Before delving into this more complex example, we introduce necessary concepts needed to understand regression. 
+
+## Introduction to regression
+In statistical modeling, regression analysis is a set of statistical processes for estimating the relationships between a dependent variable (often called the 'outcome' or 'response' variable, or a 'label' in machine learning parlance) and one or more independent variables (often called 'predictors', 'covariates', 'explanatory variables' or 'features'). The most common form of regression analysis is **linear regression**, in which one finds the line (or a more complex linear combination) that most closely fits the data according to a specific mathematical criterion.
+
+## Introduction to regression
+Consider the model function 
+$$y_i=\alpha+\beta x_i,$$
+which describes a line with slope $\beta$ and $y$-intercept $\alpha$. 
+
+## Introduction to regression
+In general such a relationship may not hold exactly for the largely unobserved population of values of the independent and dependent variables; we call the unobserved deviations from the above equation the errors. Suppose we observe $n$ data pairs and call them 
+$${(x_i, y_i), i = 1, ..., n}.$$ 
+We can describe the underlying relationship between $y_i$ and $x_i$ involving this error term $\epsilon_i$ by
+$$y_i=\alpha+\beta x_i+\epsilon_i.$$
+This relationship between the true (but unobserved) underlying parameters $\alpha$ and $\beta$ and the data points is called a **linear regression model**.
+
+## Introduction to regression
+![](regfigs/Linear_regression.png)
+
+## Introduction to regression
+The goal is to find estimated values $\hat\alpha$ and $\hat\beta$ for the parameters $\alpha$ and $\beta$ which would provide the "best" fit in some sense for the data points. Here, the "best" fit will be understood as in the least-squares approach: a line that minimizes the sum of squared residuals 
+$$\min_{\alpha,\beta}Q(\alpha,\beta)=\sum_{i=1}^n \epsilon_i^2 = \underset{\alpha,\beta}\inf\left\{\sum_{i=1}^n(y_i-\alpha-\beta)^2\right\}.$$
+
+## Introduction to regression
+![](regfigs/rss.png)
+
+## Introduction to regression
+Now, we can extend this to include multiple ($p$) predictors: 
+$$y_i=x_{i1}\beta_1+\ldots+x_{ip}\beta_p+\epsilon_i=\sum_{j=1}^{p}x_{ij}\beta_j+\epsilon_i.$$
+
+## Introduction to regression
+In addition we can use matrices to represent our model. Assume ${\bf y}=(y_1, y_2, \ldots, y_n)$ with a matrix of predictors ${\bf X}$ and coefficient vector $\beta$ ($n\times 1$ vector). Then we can define our regression equation as: $${\bf y}=X\beta+\epsilon,$$
+where $\epsilon\sim N({\bf 0},\sigma^2 I_n)$ and $I_n$ is an identity matrix with dimension $n$.
+
+## Introduction to regression
+Minimizing the least squared error is can be represented by
+$$\hat\beta=\underset{\beta}\inf\left\{\sum_{i=1}^{n}(y_i-\sum_{j=1}^{p}x_{ij}\beta_j)^2\right\}=\underset{\beta}\inf\left\{({\bf y}-{\bf X}\beta)'({\bf y}-{\bf X}\beta)\right\}$$
+
 ## The regression fallacy
 
 Wikipedia defines the _sophomore slump_ as: \vskip .2in
