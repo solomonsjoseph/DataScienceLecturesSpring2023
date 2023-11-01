@@ -203,7 +203,8 @@ Now let's apply a non-linear (polynomial) SVM to our prior simulated dataset.
 ```{r,out.width="60%",fig.align='center'}
 library(e1071)
 dat = data.frame(x, y = as.factor(y))
-svmfit = svm(y ~ ., data = dat, kernel = "polynomial", cost = 10, scale = FALSE)
+svmfit = svm(y ~ ., data = dat, 
+             kernel = "polynomial", cost = 10, scale = FALSE)
 print(svmfit)
 ```
 
