@@ -5,7 +5,7 @@ author:  |
   | Professor, Division of Infectious Disease
   | Director, Center for Data Science
   | Rutgers University -- New Jersey Medical School
-date: "7/31/2023"
+date: "8/21/2023"
 header-includes:
    - \usepackage{amsmath}
 output: 
@@ -17,7 +17,7 @@ tables: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE) 
 library(caret)
 library(tidyverse)
 library(gam)
@@ -25,39 +25,51 @@ img_path <- "cvfigs/"
 ```
 
 ## Cross-validation 
-In our LASSO analyses, we introduced and used **cross-validation** to select an optimal value for $\lambda$. 
+__Cross-validation__ is one of the most important ideas in machine learning. Here we focus on the conceptual and mathematical aspects. We will describe how to implement cross validation in practice in later examples. 
 
-Cross-validation is one of the most important ideas in machine learning. Here we focus on the conceptual and mathematical aspects. We will describe how to implement cross validation in practice in later examples. 
+## K-nearest neighbors (kNN)
+To motivate the concept, we will introduce an actual machine learning algorithm: __k-nearest neighbors (kNN)__.
+\center
+![](cvfigs/KnnClassification.svg.png){width=60%}
 
-## Cross-validation example
-To motivate the concept, we will introduce an actual machine learning algorithm: k-nearest neighbors (kNN).
+
+## K-nearest neighbors (kNN)
+\center
+![](cvfigs/knn.png){width=85%}
+
+## K-nearest neighbors (kNN)
+With k-nearest neighbors (kNN) we estimate the conditional probability function: 
+$$p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).$$
+First we define the distance between each of the observations. Then, for any point $(x_1,x_2)$ for which we want an estimate of $p(x_1, x_2)$, we look for the $k$ nearest points to $(x_1,x_2)$ and then take an average of the 0s and 1s associated with these points. We refer to the set of points used to compute the average as the _neighborhood_. This gives us an estimate $\hat{p}(x_1,x_2)$.
+
+
+
+## K-nearest neighbors (kNN)
+\center
+Using _k=1_: \    \   \   \   \   \  \    \    and _k_=5:
+
+![](cvfigs/Map1NN.png){width=45%} 
+![](cvfigs/Map5NN.png){width=45%} 
+
+
+## K-nearest neighbors (kNN): Example
+Using the following dataset:
 \small
 ```{r mnist-27-data, warning=FALSE, message=FALSE, fig.height = 3, fig.width = 6, out.width="75%", fig.align="center"}
 library(dslabs); data("mnist_27")
 mnist_27$test %>% ggplot(aes(x_1, x_2, color = y)) + geom_point()
 ```
 
-<!--
-## Cross-validation example: k-nearest neighbors (kNN)
-With k-nearest neighbors (kNN) we estimate the conditional probability function: 
-$$p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).$$
-First we define the distance between each of the observations. Then, for any point $(x_1,x_2)$ for which we want an estimate of $p(x_1, x_2)$, we look for the $k$ nearest points to $(x_1,x_2)$ and then take an average of the 0s and 1s associated with these points. We refer to the set of points used to compute the average as the _neighborhood_. This gives us an estimate $\hat{p}(x_1,x_2)$.
--->
-
-## Cross-validation example: k-nearest neighbors (kNN)
-\center
-![](cvfigs/knn.png){width=85%}
-
-## Cross-validation example: k-nearest neighbors (kNN)
-We can use the `knn3` function from the __caret__ package as follows, with the number of neighbors equal to $k=5$.:
+## K-nearest neighbors (kNN): Example
+We can use the `knn3` function from the `caret` package as follows, with the number of neighbors equal to $k=5$.:
 
 ```{r, eval=TRUE}
 library(caret)
 knn_fit <- knn3(y ~ ., data = mnist_27$train, k = 5)
 ```
 
-## Cross-validation example 
-In this case, since our dataset is balanced and we care just as much about sensitivity as we do about specificity, we will use accuracy to quantify performance.
+## K-nearest neighbors (kNN): Example
+Since our dataset is balanced and we care just as much about sensitivity as we do about specificity, we will use accuracy to quantify performance.
 
 The `predict` function for `knn` produces a probability for each class. 
 \small
@@ -66,24 +78,9 @@ y_hat_knn <- predict(knn_fit, mnist_27$test, type = "class")
 confusionMatrix(y_hat_knn, mnist_27$test$y)$overall["Accuracy"]
 ```
 
-<!--
-## Cross-validation example 
-Alternatively, we can use linear regression to generate an estimate:
-\small
-```{r}
-fit_lm <- mnist_27$train %>% 
-  mutate(y = ifelse(y == 7, 1, 0)) %>% 
-  lm(y ~ x_1 + x_2, data = .)
-p_hat_lm <- predict(fit_lm, mnist_27$test)
-y_hat_lm <- factor(ifelse(p_hat_lm > 0.5, 7, 2))
-confusionMatrix(y_hat_lm, mnist_27$test$y)$overall["Accuracy"]
-```
+## K-nearest neighbors (kNN): Example
 
-
-## Cross-validation example 
-And we see that kNN, with the default parameter, already beats regression. To see why this is the case, we will plot $\hat{p}(x_1, x_2)$ and compare it to the true conditional probability $p(x_1, x_2)$:
--->
-```{r, echo=FALSE}
+```{r knn-fit, echo=FALSE, message=FALSE, warning=FALSE, out.width="90%",fig.align="center"}
 # We use this function to plot the estimated conditional probabilities
 plot_cond_prob <- function(p_hat=NULL){
   tmp <- mnist_27$true_p
@@ -95,12 +92,7 @@ plot_cond_prob <- function(p_hat=NULL){
   scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
   stat_contour(breaks=c(0.5),color="black")
 }
-```
 
-
-## Cross-validation example 
-
-```{r knn-fit, echo=FALSE, message=FALSE, warning=FALSE, out.width="90%",fig.align="center"}
 p1 <- plot_cond_prob() + ggtitle("True conditional probability")
 
 p2 <- plot_cond_prob(predict(knn_fit, mnist_27$true_p)[,2]) +
@@ -109,12 +101,6 @@ library(gridExtra)
 
 grid.arrange(p2, p1, nrow=1)
 ``` 
-
-<!--
-## Over-training
-We see that kNN better adapts to the non-linear shape of $p(x_1, x_2)$. However, our estimate has some islands of blue in the red area, which intuitively does not make much sense. This is due to what we call _over-training_. 
--->
-
 
 ## Over-training
 **Over-training** or **over-fitting** results in having higher accuracy in the train set compared to the test set:
@@ -181,7 +167,7 @@ confusionMatrix(y_hat_knn_401, mnist_27$test$y)$overall["Accuracy"]
 ```
 
 ## Over-smoothing
-```{r mnist-27-glm-est, echo=FALSE, fig.height = 4, fig.width = 6, out.width="100%",fig.align="center"}
+```{r mnist-27-glm-est, echo=FALSE, fig.height = 4, fig.width = 6, out.width="90%",fig.align="center"}
 
 p1 <- plot_cond_prob(predict(knn_fit_1, mnist_27$true_p)[,2]) +
   ggtitle("kNN-1")
@@ -199,8 +185,9 @@ grid.arrange(p1, p2, p3, nrow=1)
 
 ## Picking the $k$ in kNN
 
-So how do we pick $k$? In principle we want to pick the $k$ that maximizes accuracy, or minimizes the expected MSE. 
-The goal of cross validation is to estimate these quantities for any given algorithm and set of tuning parameters such as $k$. To understand why we need a special method to do this let's repeat what we did above but for different values of $k$:
+So how do we pick $k$? In principle, we want to pick the $k$ that maximizes accuracy, or minimizes the expected MSE (defined later). 
+
+The goal of **cross validation** is to estimate these quantities for any given algorithm and set of tuning parameters such as $k$. To understand why we need a special method to do this let's repeat what we did above but for different values of $k$:
 
 ```{r}
 ks <- seq(3, 251, 2)
@@ -239,17 +226,18 @@ accuracy %>% mutate(k = ks) %>%
 ```
 
 ## Picking the $k$ in kNN
-First, note that the estimate obtained on the training set is generally lower than the estimate obtained with the test set, with the difference larger for smaller values of $k$. This is due to over-training. 
-
-Also note that the accuracy versus $k$ plot is quite jagged. We do not expect this because small changes in $k$ should not affect the algorithm's performance too much. The jaggedness is explained by the fact that the accuracy is computed on a sample and therefore is a random variable. This demonstrates why we prefer to minimize the expected loss rather than the loss we observe with one dataset. 
-
-## Picking the $k$ in kNN
 If we were to use these estimates to pick the $k$ that maximizes accuracy, we would use the estimates built on the test data:
 
 ```{r}
 ks[which.max(accuracy$test)]
 max(accuracy$test)
 ```
+
+## Picking the $k$ in kNN
+First, note that the estimate obtained on the training set is generally lower than the estimate obtained with the test set, with the difference larger for smaller values of $k$. This is due to over-training. 
+
+Also note that the accuracy versus $k$ plot is quite jagged. We do not expect this because small changes in $k$ should not affect the algorithm's performance too much. The jaggedness is explained by the fact that the accuracy is computed on a sample and therefore is a random variable. This demonstrates why we prefer to minimize the expected loss (defined later) rather than the loss we observe with one dataset. 
+
 
 ## Picking the $k$ in kNN
 Another reason we need a better estimate of accuracy is that if we use the test set to pick this $k$, we should not expect the accompanying accuracy estimate to extrapolate to the real world. This is because even here we broke a golden rule of machine learning: we selected the $k$ using the test set. Cross validation also provides an estimate that takes this into account.
@@ -297,7 +285,7 @@ if(knitr::is_html_output()){
 -->
 
 ## K-fold cross validation
-The first one we describe is __K-fold cross validation__. A machine learning challenge starts with a dataset (blue). We need to use this to build an algorithm that will be used in an independent dataset (yellow).
+The first one we describe is __K-fold cross validation__. A machine learning challenge starts with a dataset (blue). We need to use this to build an algorithm that will be used in an independent validation dataset (yellow).
 \center
 ![](cvfigs/cv-1.png){height=75%}
 
@@ -386,7 +374,7 @@ Now how do we pick the cross validation $K$? Large values of $K$ are preferable 
 One way we can improve the variance of our final estimate is to take more samples. To do this, we would no longer require the training set to be partitioned into non-overlapping sets. Instead, we would just pick $K$ sets of some size at random.
 
 ## K-fold cross validation
-One popular version of this technique, at each fold, picks observations at random with replacement (which means the same observation can appear twice). This approach has some advantages (not discussed here) and is generally referred to as the _bootstrap_. In fact, this is the default approach in the __caret__ package.  We describe how to implement cross validation with the __caret__ package in the next chapter. In the next section, we include an explanation of how the bootstrap works in general.
+One popular version of this technique, at each fold, picks observations at random with replacement (which means the same observation can appear twice). This approach has some advantages (not discussed here) and is generally referred to as the _bootstrap_. In fact, this is the default approach in the __caret__ package.  In the next section, we include an explanation of how the bootstrap works in general.
 
 ## Bootstrap
 
@@ -475,7 +463,7 @@ For more on the Bootstrap, including corrections one can apply to improve these 
 
 ## The caret package {#caret}
 
-We have already learned about regression and kNN as machine learning algorithms. This is just a small subset of all the algorithms out there. Many of these algorithms are implemented in R. However, they are distributed via different packages, developed by different authors, and often use different syntax. 
+We have already learned about the kNN machine learning algorithms. This is just one of many algorithms out there. Many of these algorithms are implemented in R. However, they are distributed via different packages, developed by different authors, and often use different syntax. 
 
 ## The caret package {#caret}
 The __caret__ package tries to consolidate these differences and provide consistency. It currently includes 237 different methods which are summarized in the __caret__ package manual^[https://topepo.github.io/caret/available-models.html]. 
@@ -611,7 +599,7 @@ names(train_knn$results)
 ## Cross validation 
 We can also see the standard deviation bars obtained from the cross validation samples:
 \footnotesize
-```{r accuracy-with-sd-bars, fig.height = 3, fig.width = 6, out.width="80%",fig.align="center"}
+```{r accuracy-with-sd-bars, fig.height = 3, fig.width = 6, out.width="70%",fig.align="center"}
 train_knn$results %>% 
   ggplot(aes(x = k, y = Accuracy)) +
   geom_line() + geom_point() +
@@ -666,7 +654,7 @@ grid <- expand.grid(span = seq(0.15, 0.65, len = 10)
 ## Example: fitting with loess
 We will use the default cross validation control parameters.
 \small
-```{r loess-accuracy, warning=FALSE, message=FALSE, out.width="70%",fig.align="center"}
+```{r loess-accuracy, warning=FALSE, message=FALSE, out.width="60%",fig.align="center"}
 train_loess <- train(y ~ ., method = "gamLoess", 
                    tuneGrid=grid,
                    data = mnist_27$train)

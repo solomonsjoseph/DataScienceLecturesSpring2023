@@ -1,0 +1,296 @@
+---
+title: "Support Vector Machines"
+author: | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Rutgers University -- New Jersey Medical School
+date: "10/30/2023"
+header-includes:
+   - \usepackage{amsmath}
+output: 
+  beamer_presentation:
+    theme: "CambridgeUS"
+editor_options: 
+  chunk_output_type: console
+tables: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+library(caret)
+library(tidyverse)
+img_path <- "svmFigs/"
+```
+
+## Support Vector Machines
+In machine learning, **support vector machines** or **SVM**s are supervised learning models with associated learning algorithms that analyze data used for classification and regression analysis. However, they are mostly used in classification problems. Here we will focus on developing intuition rather than rigor and develop a basic understanding of the working principles.
+
+\vskip .2in
+Material for this lecture was obtained and adapted from: 
+\footnotesize
+
+* [https://www.datacamp.com/community/tutorials/support-vector-machines-r](https://www.datacamp.com/community/tutorials/support-vector-machines-r) 
+* [_The Elements of Statistical Learning_, Hastie, et al., Springer](https://hastie.su.domains/Papers/ESLII.pdf)
+* [https://www.geeksforgeeks.org/classifying-data-using-support-vector-machinessvms-in-r/amp/](https://www.geeksforgeeks.org/classifying-data-using-support-vector-machinessvms-in-r/amp/)
+
+## Support Vector Machines--Linear Data
+Let’s imagine we have two tags: _red_ and _blue_, and our data has two features: $x$ and $y$. We can plot our training data on a plane:
+
+\center
+![](svmFigs/svm1.png){width=50%}
+
+## Support Vector Machines
+An **SVM** identifies the **decision boundary** or **hyperplane** (two dimensions: line) that best separates the tags:
+
+\center
+![](svmFigs/svm2.png){width=50%}
+
+
+## Support Vector Machines
+But, what exactly is the best hyperplane? For SVM, it’s the one that maximizes the margins from the data from both tags:
+\center
+![](svmFigs/svm3.png){width=50%}
+
+## A Look into SVM Methodology
+\center
+![](svmFigs/TESL1.png){width=75%}
+
+## A Look into SVM Methodology
+\center
+![](svmFigs/TESL3.png){width=75%}
+
+
+## A Look into SVM Methodology
+\center
+![](svmFigs/TESL2.png){width=75%}
+
+
+## A Look into SVM Methodology
+\center
+![](svmFigs/TESL4.png){width=90%}
+
+
+## Support Vector Machines in R
+
+First generate some data in 2 dimensions, and make them a little separated:
+\small
+```{r,out.width="60%",fig.align='center'}
+set.seed(10111)
+x = matrix(rnorm(40), 20, 2)
+y = rep(c(-1, 1), c(10, 10))
+x[y == 1,] = x[y == 1,] + 1
+plot(x, col = y + 3, pch = 19)
+```
+
+## Support Vector Machines in R
+We will use the **e1071** package which contains the svm function and make a dataframe of the data, turning $y$ into a factor variable. <!--After that, you make a call to svm on this dataframe, using y as the response variable and other variables as the predictors. The dataframe will have unpacked the matrix x into 2 columns named x1 and x2. You tell SVM that the kernel is linear, the tune-in parameter cost is 10, and scale equals false. In this example, you ask it not to standardize the variables.-->
+
+\scriptsize
+```{r,out.width="60%",fig.align='center'}
+library(e1071)
+dat = data.frame(x, y = as.factor(y))
+svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 10, scale = FALSE)
+print(svmfit)
+```
+
+<!--Printing the svmfit gives its summary. You can see that the number of support vectors is 6 - they are the points that are close to the boundary or on the wrong side of the boundary.-->
+
+## Support Vector Machines in R
+
+There's a plot function for SVM that shows the decision boundary<!--, as you can see below. It doesn't seem there's much control over the colors. It breaks with convention since it puts x2 on the horizontal axis and x1 on the vertical axis.-->
+
+```{r,out.width="75%",fig.align='center'}
+plot(svmfit, dat)
+```
+
+## Support Vector Machines in R
+Or plotting it more cleanly:
+```{r,include=F,echo=F}
+make.grid = function(x, n = 75) {
+  grange = apply(x, 2, range)
+  x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
+  x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
+  expand.grid(X1 = x1, X2 = x2)
+}
+xgrid = make.grid(x)
+```
+
+\scriptsize
+```{r,out.width="75%",fig.align='center'}
+ygrid = predict(svmfit, xgrid)
+plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+```
+
+
+## Support Vector Machines in R
+Unfortunately, the svm function is not too friendly, in that you have to do some work to get back the linear coefficients. The reason is probably that this only makes sense for linear kernels, and the function is more general. So let's use a formula to extract the coefficients more efficiently. You extract $\beta$ and $\beta_0$, which are the linear coefficients.
+
+
+```{r}
+beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
+beta0 = svmfit$rho
+```
+
+
+Now you can replot the points on the grid, then put the points back in (including the support vector points). Then you can use the coefficients to draw the decision boundary using a simple equation of the form:
+
+$$\beta_0+x_1\beta_1+x_2\beta_2=0$$
+
+## Support Vector Machines in R
+Now plotting the lines on the graph:
+\footnotesize
+```{r,out.width="90%",fig.align='center' ,echo=F}
+plot(xgrid, col = c("red", "blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+abline(beta0 / beta[2], -beta[1] / beta[2])
+abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
+abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
+```
+
+## Support Vector Machines--Non-Linear Data
+Now the examples before were easy since clearly, the data was linearly separable. Often things aren’t that simple. Take a look at this case:
+\center
+![](svmFigs/svm4.png){width=60%}
+
+## Support Vector Machines
+It’s pretty clear that there’s not a linear decision boundary (a single straight line that separates both tags). However, the vectors are very clearly segregated, and it looks as though it should be easy to separate them.
+
+So here’s what we’ll do: we will add a third dimension. Up until now, we had two dimensions: $x$ and $y$. We create a new $z$ dimension, and we rule that it be calculated a certain way that is convenient for us: $z=x^2+y^2$ (you’ll notice that’s the equation for a circle).
+
+
+## Support Vector Machines
+his will give us a three-dimensional space. Taking a slice of that space:
+\center
+![](svmFigs/svm5.png){width=60%}
+
+## Support Vector Machines
+What can SVM do with this? Let’s see:
+
+\hfil ![](svmFigs/svm6.png){width=50%} \hfil
+
+That’s great! Note that since we are in three dimensions now, the hyperplane is a plane parallel to the $x$ axis at a certain $z$ (let’s say $z$=1).
+
+## Support Vector Machines
+What’s left is mapping it back to two dimensions:
+
+\hfil ![](svmFigs/svm7.png){width=50%} \hfil
+
+And there we go! Our decision boundary is a circumference of radius 1, which separates both tags using SVM.
+
+
+## Kernel Trick
+In this example, we found a way to classify nonlinear data by cleverly mapping our space to a higher dimension. However, it turns out that calculating this transformation can get pretty computationally expensive: there can be a lot of new dimensions, each one of them possibly involving a complicated calculation. Doing this for every vector in the dataset can be a lot of work, so it’d be great if we could find a cheaper solution.
+
+## Kernel Trick
+Here’s a trick: SVM doesn’t need the actual vectors to work its magic, it actually can get by only with the dot products between them. This means that we can sidestep the expensive calculations of the new dimensions! This is what we do instead:
+
+* Imagine the new space we want: $$z=x^2+y^2$$
+* Figure out what the dot product in that space looks like: $$a\cdot b = x_a\cdot x_b + y_a\cdot y_b + z_a\cdot z_b = x_a\cdot x_b + y_a\cdot y_b + (x_a^2+y_a^2)\cdot (x_b^2+y_b^2)$$
+* Tell SVM to do its thing, but using the new dot product---we call this a **kernel function**.
+
+## Kernel Trick
+This often called the **kernel trick**, which enlarges the feature space in order to accommodate a non-linear boundary between the classes. 
+
+Common types of kernels used to separate non-linear data are _polynomial_ kernels, _radial basis_ kernels, and _linear_ kernels (which are the same as support vector classifiers). Simply, these kernels transform our data to pass a linear hyperplane and thus classify our data.
+
+## Support Vector Machines in R: Non-linear SVM
+Now let's apply a non-linear (polynomial) SVM to our prior simulated dataset. 
+\scriptsize
+```{r,out.width="60%",fig.align='center'}
+library(e1071)
+dat = data.frame(x, y = as.factor(y))
+svmfit = svm(y ~ ., data = dat, 
+             kernel = "polynomial", cost = 10, scale = FALSE)
+print(svmfit)
+```
+
+
+## Support Vector Machines in R: Non-linear SVM
+Plotting the result:
+```{r,out.width="90%",fig.align='center', echo=F}
+ygrid = predict(svmfit, xgrid)
+plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+```
+
+## Support Vector Machines in R: Non-linear SVM
+Here is a more complex example from _Elements of Statistical Learning_, where the decision boundary needs to be non-linear and there is no clear separation. 
+\scriptsize
+```{r}
+#download.file(
+#  "http://www-stat.stanford.edu/~tibs/ElemStatLearn/datasets/ESL.mixture.rda", 
+#  destfile='ESL.mixture.rda')
+rm(x,y)
+load(file = "ESL.mixture.rda")
+attach(ESL.mixture)
+names(ESL.mixture)
+```
+
+## Support Vector Machines in R: Non-linear SVM
+Plotting the data:
+```{r, out.width="75%", fig.height=4.5, fig.width=6, fig.align='center'}
+plot(x, col = y + 1)
+```
+
+
+## Support Vector Machines in R: Non-linear SVM
+Now make a data frame with the response $y$, and turn that into a factor. We will fit an SVM with radial kernel.
+\scriptsize
+```{r}
+dat = data.frame(y = factor(y), x)
+fit = svm(factor(y) ~ ., data = dat, scale = FALSE, 
+          kernel = "radial", cost = 5)
+print(fit)
+```
+
+
+## Support Vector Machines in R: Non-linear SVM
+
+It's time to create a grid and  predictions. We use `expand.grid` to create the grid, predict each of the values on the grid, and plot them:
+\scriptsize
+```{r, out.width="75%", fig.height=4.5, fig.width=6, fig.align='center'}
+xgrid = expand.grid(X1 = px1, X2 = px2)
+ygrid = predict(fit, xgrid)
+plot(xgrid, col = as.numeric(ygrid), pch = 20, cex = .2)
+points(x, col = y + 1, pch = 19)
+```
+
+## Support Vector Machines in R: Non-linear SVM
+
+Plotting with a contour:
+```{r, out.width="90%", fig.height=4.5, fig.width=6, fig.align='center', echo=F}
+func = predict(fit, xgrid, decision.values = TRUE)
+func = attributes(func)$decision
+
+xgrid = expand.grid(X1 = px1, X2 = px2)
+ygrid = predict(fit, xgrid)
+plot(xgrid, col = as.numeric(ygrid), pch = 20, cex = .2)
+points(x, col = y + 1, pch = 19)
+
+contour(px1, px2, matrix(func, 69, 99), level = 0, add = TRUE, lwd=2)
+#contour(px1, px2, matrix(func, 69, 99), level = 0.5, add = TRUE, col = "blue", lwd = 2)
+```
+
+## Advantages and Disadvantages of SVMs
+**Advantages:**
+
+* **High Dimensionality:** SVM is an effective tool in high-dimensional spaces, which is particularly applicable to document classification and sentiment analysis where the dimensionality can be extremely large.
+* **Memory Efficiency:** Since only a subset of the training points are used in the actual decision process of assigning new members, just these points need to be stored in memory (and calculated upon) when making decisions.
+* **Versatility:** Class separation is often highly non-linear. The ability to apply new kernels allows substantial flexibility for the decision boundaries, leading to greater classification performance.
+
+## Advantages and Disadvantages of SVMs
+**Disadvantages:**
+
+* **Kernel Selection:** SVMs are very sensitive to the choice of the kernel parameters. In situations where the number of features for each object exceeds the number of training data samples, SVMs can perform poorly. This can be seen intuitively as if the feature space is much larger than the samples. Then there are less effective support vectors on which to support the optimal linear hyperplanes.
+* **Non-Probabilistic:** Since the classifier works by placing objects above and below a classifying hyperplane, there is no direct probabilistic interpretation for group membership. However, one potential metric to determine the "effectiveness" of the classification is how far from the decision boundary the new point is.
+
+## Session Info
+\tiny
+```{r session}
+sessionInfo()
+```

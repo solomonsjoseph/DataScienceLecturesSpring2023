@@ -1,0 +1,250 @@
+---
+title: "Nanostring Analysis"
+author: | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Rutgers University -- New Jersey Medical School
+date: "10/2/2023"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    theme: "flatly"
+editor_options: 
+  chunk_output_type: console
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages({
+  library(SummarizedExperiment)
+  library(glmnet)
+  library(DT)
+  })
+```
+
+# Read in the data
+```{r Load Data}
+# Read in the data
+nano_data <- readRDS("nano_tibble.rds")
+datatable(nano_data)
+```
+
+# Logistic Regression LASSO, Ridge, and Elastic Net {.tabset}
+
+## LASSO {.tabset}
+Set family option to “binomial” in the glmnet function:
+```{r}
+fit <- glmnet(nano_data[,-1],nano_data$TBStatus, family = "binomial")
+```
+
+### Visualize L1
+We can visualize the coefficients by executing the plot method:
+```{r}
+plot(fit)
+```
+
+### Print summary
+A summary of the glmnet path at each step is displayed if we just enter the object name or use the print function:
+```{r}
+print(fit)
+```
+
+### Results $\lambda=0.3$
+Model coefficients for $\lambda = 0.3$:
+```{r}
+coef(fit, s = .3)
+```
+
+### Results $\lambda = 0.2$:
+```{r}
+coef(fit, s = .2)
+```
+
+### Results $\lambda=0.1$
+Model coefficients for $\lambda = 0.1$:
+```{r}
+coef(fit, s = 0.1)
+```
+
+### Results $\lambda=0.05$
+Model coefficients for $\lambda = 0.05$:
+```{r}
+coef(fit, s = 0.05)
+```
+
+
+### Cross-validation {.tabset}
+The function **glmnet** returns a sequence of models for the users to choose from. **Cross-validation** is perhaps the simplest and most widely used method to select a model. **cv.glmnet** is the main function to do cross-validation here, along with various supporting methods such as plotting and prediction.
+
+
+```{r}
+set.seed(0)
+cvfit <- cv.glmnet(as.matrix(nano_data[,-1]), nano_data$TBStatus, family = "binomial", 
+                   type.measure = "class")
+```
+
+#### Cross-validation plot
+```{r}
+plot(cvfit)
+```
+
+#### $\lambda_{min}$ value
+We can get the value of $\lambda_{min}$ and the model coefficients:
+```{r }
+cvfit$lambda.min
+```
+
+#### Coefficients at $\lambda_{min}$
+```{r}
+coef(cvfit, s = "lambda.min")
+```
+
+
+## Ridge Regression {.tabset}
+Set family option to “binomial” in the glmnet function:
+```{r}
+fit <- glmnet(nano_data[,-1],nano_data$TBStatus, family = "binomial", alpha=0)
+```
+
+
+### Visualize L2
+We can visualize the coefficients by executing the plot method:
+```{r}
+plot(fit)
+```
+
+### Print summary
+A summary of the glmnet path at each step is displayed if we just enter the object name or use the print function:
+```{r}
+print(fit)
+```
+
+### Results $\lambda=0.3$
+Model coefficients for $\lambda = 0.3$:
+```{r}
+coef(fit, s = .3)
+```
+
+### Results $\lambda = 0.2$:
+```{r}
+coef(fit, s = .2)
+```
+
+### Results $\lambda=0.1$
+Model coefficients for $\lambda = 0.1$:
+```{r}
+coef(fit, s = 0.1)
+```
+
+### Results $\lambda=0.05$
+Model coefficients for $\lambda = 0.05$:
+```{r}
+coef(fit, s = 0.05)
+```
+
+
+### Cross-validation {.tabset}
+The function **glmnet** returns a sequence of models for the users to choose from. **Cross-validation** is perhaps the simplest and most widely used method to select a model. **cv.glmnet** is the main function to do cross-validation here, along with various supporting methods such as plotting and prediction.
+
+
+```{r}
+set.seed(0)
+cvfit <- cv.glmnet(as.matrix(nano_data[,-1]), nano_data$TBStatus, family = "binomial", 
+                   type.measure = "class",
+                   alpha=0)
+```
+
+#### Cross-validation plot
+```{r}
+plot(cvfit)
+```
+
+#### $\lambda_{min}$ value
+We can get the value of $\lambda_{min}$ and the model coefficients:
+```{r }
+cvfit$lambda.min
+```
+
+#### Coefficients at $\lambda_{min}$
+```{r}
+coef(cvfit, s = "lambda.min")
+```
+
+## Elastic Net Regression {.tabset}
+Set family option to “binomial” in the glmnet function:
+```{r}
+fit <- glmnet(nano_data[,-1],nano_data$TBStatus, family = "binomial", alpha=0.5)
+```
+
+
+### Visualize L1
+We can visualize the coefficients by executing the plot method:
+```{r}
+plot(fit)
+```
+
+### Print summary
+A summary of the glmnet path at each step is displayed if we just enter the object name or use the print function:
+```{r}
+print(fit)
+```
+
+### Results $\lambda=0.7$
+Model coefficients for $\lambda = 0.3$:
+```{r}
+coef(fit, s = .7)
+```
+
+### Results $\lambda = 0.6$:
+```{r}
+coef(fit, s = .6)
+```
+
+### Results $\lambda=0.55$
+Model coefficients for $\lambda = 0.1$:
+```{r}
+coef(fit, s = 0.55)
+```
+
+### Results $\lambda=0.1$
+Model coefficients for $\lambda = 0.05$:
+```{r}
+coef(fit, s = 0.05)
+```
+
+
+### Cross-validation {.tabset}
+The function **glmnet** returns a sequence of models for the users to choose from. **Cross-validation** is perhaps the simplest and most widely used method to select a model. **cv.glmnet** is the main function to do cross-validation here, along with various supporting methods such as plotting and prediction.
+
+
+```{r}
+set.seed(0)
+cvfit <- cv.glmnet(as.matrix(nano_data[,-1]), nano_data$TBStatus, family = "binomial", 
+                   type.measure = "class",
+                   alpha=0.5)
+```
+
+#### Cross-validation plot
+```{r}
+plot(cvfit)
+```
+
+#### $\lambda_{min}$ value
+We can get the value of $\lambda_{min}$ and the model coefficients:
+```{r }
+cvfit$lambda.min
+```
+
+#### Coefficients at $\lambda_{min}$
+```{r}
+coef(cvfit, s = "lambda.min")
+```
+
+
+# Session Info
+
+```{r session info}
+sessionInfo()
+```
